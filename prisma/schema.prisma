@@ -1,0 +1,48 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Property {
+  id        Int      @id @default(autoincrement())
+  name      String
+  address   String?
+  reviews   Review[] @relation("PropertyReviews")
+  listings  String
+  createdAt DateTime @default(now())
+}
+
+model Review {
+  id           Int                @id @default(autoincrement())
+  property     Property?          @relation("PropertyReviews", fields: [propertyId], references: [id])
+  propertyId   Int?
+  hostawayId   Int?
+  channel      String
+  reviewType   String?
+  rating       Int?
+  publicReview String?
+  guestName    String?
+  submittedAt  DateTime?
+  approved     Boolean @default(false)
+  rawJson      String?
+  categories   ReviewCategory[]
+  createdAt    DateTime @default(now())
+}
+
+model ReviewCategory {
+  id       Int    @id @default(autoincrement())
+  review   Review @relation(fields: [reviewId], references: [id])
+  reviewId Int
+  name     String
+  rating   Int?
+}
